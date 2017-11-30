@@ -27,7 +27,7 @@ public class ExcelFormattingJava {
                 System.out.println(name);
             }
        }
-        String temp = parser.purge("1999-1992");
+        String temp = parser.purge("05-26-1669");
         System.out.println(temp);
 
     }
