@@ -7,7 +7,7 @@ public class DateParse {
 
     }
 
-
+    // removes all non numbers
     public String purge(String line){
         String numbers = "0123456789";
         String letters = "abcdefghijklmnopqrstuvwxyz-/,$";
@@ -67,12 +67,41 @@ public class DateParse {
         }
         return line;
     }
-
+    // formats dates with no numbers
     public String separate(String line){
+        // for yyyymmdd or any variant thereof
+        if(line.length() == 8){
+            // works unless its ddmmyyy and the day is the 18/19/20, if thats an issue then I'll fix it, or with more free time
+            if(line.charAt(0) == '1' && line.charAt(1) == '9')
+                line = line.substring(0,4);
+            else if(line.charAt(0) == '2' && line.charAt(1) == '0')
+                line = line.substring(0,4);
+            else if(line.charAt(0) == '1' && line.charAt(1) == '8')
+                line = line.substring(0,4);
+            // if its in mmddyyyy or ddmmyyyy or mmdyyyy or dmmyyyy
+            else{
+                if(line.length() == 8)
+                    line = line.substring(4);
+                else{
+                    line = line.substring(3);
+                }
+            }
+        }
+        // else if in mmyyyy or myyyy format
+        else if (line.length() == 5 || line.length() == 6){
+            // if not in yyyym or yyyymm format
+            if(!(line.charAt(0) == '1' && line.charAt(1) == '9') && !(line.charAt(0) == '2' && line.charAt(1) == 0))
+            {   // gets rid of the first character until the string length is 4
+                while(line.length() > 4)
+                    line = line.substring(1);
+            }
+        }
+        else
+            System.out.println(line);// to see if there are other sizes
         return line;
     }
 
-    
+
 
 }
 
@@ -82,4 +111,6 @@ public class DateParse {
         if so then find the yyyy part and delete the rest
     TODO
        -    check the line.susbtring(loc) instances to see if its working right
+       -    for the ddmmyyyy/yyyymmdd stuff add another if statement that checks the char spots 3/4 or 5/6 to makes
+            sure we got the year
  */

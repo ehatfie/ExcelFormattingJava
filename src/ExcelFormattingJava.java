@@ -28,6 +28,7 @@ public class ExcelFormattingJava {
             }
        }
         String temp = parser.purge("05-26-1996");
+        temp = parser.separate("19960526");
         System.out.println(temp);
 
     }
