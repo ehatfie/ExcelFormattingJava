@@ -6,9 +6,11 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 public class ExcelFormattingJava {
+
     public static void main(String[] args) throws Exception{
 
         DateParse parser = new DateParse();
+        IsbnParse parse2 = new IsbnParse();
         Cell cell;
         String name;
         Scanner scanner = new Scanner(System.in);
@@ -29,8 +31,11 @@ public class ExcelFormattingJava {
        }
         String temp = parser.purge("05-26-1996");
         temp = parser.separate("19960526");
+        temp = parse2.purge("1542356X");
         System.out.println(temp);
 
     }
 }
 // loan date = cell 7
+
+// implement the write after isbn is done
