@@ -45,7 +45,7 @@ public class DateParse {
                     }
                     // otherwise
                     else
-                        return line.substring(loc+1);
+                        line = line.substring(loc+1);
                 }
             }
             else if (line.charAt(loc) == ','){
@@ -63,9 +63,16 @@ public class DateParse {
                 else
                     line = line.substring(loc);
             }
+            loc = StringUtils.indexOfAnyBut(line, numbers);
         }
         return line;
     }
+
+    public String separate(String line){
+        return line;
+    }
+
+    
 
 }
 
