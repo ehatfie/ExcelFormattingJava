@@ -13,13 +13,14 @@ public class ExcelFormattingJava {
         DateParse dateParse = new DateParse();
         IsbnParse parse2 = new IsbnParse();
         Cell cell;
-        String name;
-        int loanDateLoc = 0;
+        String name, temp;
+        int loanDateLoc = 0, issnLoc = 0;
         Scanner scanner = new Scanner(System.in);
         // gets file name for excel sheet
         //System.out.println("Enter the name of the Excel sheet");
         //String filename = scanner.nextLine();
         ArrayList<String[]> newYears = new ArrayList<>();
+        ArrayList<String[]> newISBN = new ArrayList<>();
         InputStream input = null;
         OutputStream output = null;
         try {
@@ -40,12 +41,24 @@ public class ExcelFormattingJava {
             for (int i = 0; i < row.getLastCellNum(); i++) {
                 cell = row.getCell(i);// gets cell in row
                 name = cell.getStringCellValue();// gets the name of the cell
+                // finds the location of the Loan Date Cells
                 if (name.contains("Loan Date")) {
                     loanDateLoc = i;
-                    break;
                 }
+                // finds the location of the ISSN cells
+                else if (name.contains("ISSN")){
+                    issnLoc = i;
+
+                }
+                // if both have been found then leave the loop
+                if (loanDateLoc > 0 && issnLoc > 0)
+                    break;
             }
-            String temp;
+            if (loanDateLoc == 0)
+                System.out.println("Could not find a cell named Loan Date");
+            else if (issnLoc == 0)
+                System.out.println("Could not find a cell named ISSN");
+
             if (loanDateLoc != 0) {
                 int loc = 0; // the row number that the year is being changed in
 
@@ -70,6 +83,34 @@ public class ExcelFormattingJava {
                     System.out.println();
                 }
             }
+
+            if (issnLoc != 0){
+                int loc = 0; // the row number that the isbn is being changed in
+
+                // goes through the rows
+                for(int i = 0; i < sheet.getLastRowNum(); i++){
+                    if(1 == 0 )
+                        newISBN.add(new String[]{ "" + i, "ISSN/ISBN"});
+                    else {
+                        // gets the row
+                        row = sheet.getRow(i);
+                        // gets the value of the cell that has the ISSN
+                        temp = row.getCell(issnLoc).getStringCellValue();
+                        // if there is a non number or dash then it gets removed
+                        if (StringUtils.indexOfAnyBut("0123456789-") > -1) {
+                            temp = parse2.purge(temp);
+                        }
+                        // if the ISSN is 8 long then add a dash
+                        if (temp.length() == 8)
+                            temp = parse2.edit(temp);
+                        Cell c = null;
+                        c = row.getCell(issnLoc);
+                        // if the value of the cell has changed then put the new value into the list that will be used to change the sheet
+                        if (c.getStringCellValue() != temp)
+                            newISBN.add(new String[] {"" + i, temp});
+                    }
+                }
+            }
         }finally {
             try {
                 if (input != null)
@@ -78,6 +119,25 @@ public class ExcelFormattingJava {
                 System.out.println("Failed to close stream");
             }
         }
+        //---------------------------------Editing Excel Sheet-------------------------------------------------
+        try{
+            output = new FileOutputStream("test.txt");// open the output
+            System.out.println("Attempting to open file.");
+            if(output == null)
+                System.out.println("File opened unsuccessfully");
+            else{
+                System.out.println("File opened successfully!");
+            }
+
+        }finally{
+            try{
+                if (output != null)
+                    output.close();
+            }catch (IOException e){
+                System.out.println("Failed to close stream");
+            }
+        }
+
     }
 }
 // loan date = cell 7
