@@ -11,8 +11,25 @@ public class DateParse {
     public String purge(String line){
         String numbers = "0123456789";
         String letters = "abcdefghijklmnopqrstuvwxyz-/,$";
+        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "November", "December"};
         int loc = StringUtils.indexOfAnyBut(line, numbers);
         while(loc != -1){
+            if (loc == 0){ // if the first spot in the line is a letter
+                // checks against the months
+                for(int i = 0; i < months.length; i++){
+                    // if it contains a month then only keep past the mnoth, might be able to delete the next x amount of characters if its in month day, year format
+                    if(line.contains(months[i]))
+                        line = line.substring(months[i].length()+1, line.length());
+                }
+                // if there are no numbers left
+                if(StringUtils.indexOfAny(line, numbers) == -1){
+                    line = "";
+                    break;
+                }
+
+                // get the new loc so it doesnt goof
+                loc = StringUtils.indexOfAny(line, numbers);
+            }
             // if the non-number is a -
             if (line.contains("-")){
                 // if yyy-
@@ -65,7 +82,7 @@ public class DateParse {
             }
             loc = StringUtils.indexOfAnyBut(line, numbers);
         }
-        return line;
+       return line;
     }
     // formats dates with no numbers
     public String separate(String line){
@@ -113,4 +130,5 @@ public class DateParse {
        -    check the line.susbtring(loc) instances to see if its working right
        -    for the ddmmyyyy/yyyymmdd stuff add another if statement that checks the char spots 3/4 or 5/6 to makes
             sure we got the year
+       -    Stop the loop getting stuck
  */

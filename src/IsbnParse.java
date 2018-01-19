@@ -5,8 +5,11 @@ public class IsbnParse {
 
     // adds a - if the isbn is 8 long
     public String edit(String isbn){
+        String sub1, sub2;
 
-        isbn = isbn.substring(0,3) + '-' + isbn.substring(4);
+        sub1 = isbn.substring(0, 4);// get first half
+        sub2 = isbn.substring(4); // get second half
+        isbn = sub1 + '-' + sub2;
 
         return isbn;
     }
