@@ -39,6 +39,7 @@ public class ExcelFormattingJava {
 
             // finds loan date
             for (int i = 0; i < row.getLastCellNum(); i++) {
+
                 cell = row.getCell(i);// gets cell in row
                 name = cell.getStringCellValue();// gets the name of the cell
                 // finds the location of the Loan Date Cells
@@ -60,37 +61,33 @@ public class ExcelFormattingJava {
                 System.out.println("Could not find a cell named ISSN");
 
             if (loanDateLoc != 0) {
-                int loc = 0; // the row number that the year is being changed in
-
                 // goes through the rows
                 for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                    Cell c = null;
+                    c = row.getCell(loanDateLoc);
                     // gets the cell in which loan dates are located
                     row = sheet.getRow(i);
                     temp = row.getCell(loanDateLoc).getStringCellValue();
-                    // if temp is longer than 4 or if it doesnt have any numbers
+                    // if temp is longer than 4 or if it does not have any numbers
                     if(temp.length() > 4 || StringUtils.indexOfAny(temp, "0123456789") == -1) {
                         if ((temp = dateParse.purge(temp)).length() > 4) {
                             temp = dateParse.separate(temp);
-                            newYears.add(new String[]{"" + i, temp }); // this should add the row number and the year to replace
-                            System.out.println();
                         }
                     }
-                    Cell c = null;
-                    c = row.getCell(loanDateLoc);
+                    // checks if the value has been changed, if so then change it
                     if(c.getStringCellValue() != temp)
                         c.setCellValue(temp);
 
-                    System.out.println();
                 }
             }
 
             if (issnLoc != 0){
-                int loc = 0; // the row number that the isbn is being changed in
-
                 // goes through the rows
                 for(int i = 0; i < sheet.getLastRowNum(); i++){
+                    Cell c = null;
+                    c = row.getCell(issnLoc);
                     if(1 == 0 )
-                        newISBN.add(new String[]{ "" + i, "ISSN/ISBN"});
+                        c.setCellValue("ISSBN/ISSN");
                     else {
                         // gets the row
                         row = sheet.getRow(i);
@@ -103,14 +100,19 @@ public class ExcelFormattingJava {
                         // if the ISSN is 8 long then add a dash
                         if (temp.length() == 8)
                             temp = parse2.edit(temp);
-                        Cell c = null;
-                        c = row.getCell(issnLoc);
-                        // if the value of the cell has changed then put the new value into the list that will be used to change the sheet
-                        if (c.getStringCellValue() != temp)
-                            newISBN.add(new String[] {"" + i, temp});
+
+                        // if the value of the cell has changed then put the new value into the cell
+                        if (c.getStringCellValue() != temp) {
+                            c.setCellValue(temp);
+                        }
                     }
                 }
             }
+            FileOutputStream fileOut = new FileOutputStream("test.xlsx");   // opens the output stream
+            wb.write(fileOut);  // write to the workbook
+            fileOut.flush();
+            fileOut.close();
+            System.out.println();
         }finally {
             try {
                 if (input != null)
@@ -119,24 +121,7 @@ public class ExcelFormattingJava {
                 System.out.println("Failed to close stream");
             }
         }
-        //---------------------------------Editing Excel Sheet-------------------------------------------------
-        try{
-            output = new FileOutputStream("test.txt");// open the output
-            System.out.println("Attempting to open file.");
-            if(output == null)
-                System.out.println("File opened unsuccessfully");
-            else{
-                System.out.println("File opened successfully!");
-            }
 
-        }finally{
-            try{
-                if (output != null)
-                    output.close();
-            }catch (IOException e){
-                System.out.println("Failed to close stream");
-            }
-        }
 
     }
 }
