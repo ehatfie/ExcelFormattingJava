@@ -64,9 +64,10 @@ public class ExcelFormattingJava {
                 // goes through the rows
                 for (int i = 1; i < sheet.getLastRowNum(); i++) {
                     Cell c = null;
-                    c = row.getCell(loanDateLoc);
+
                     // gets the cell in which loan dates are located
                     row = sheet.getRow(i);
+                    c = row.getCell(loanDateLoc);
                     temp = row.getCell(loanDateLoc).getStringCellValue();
                     // if temp is longer than 4 or if it does not have any numbers
                     if(temp.length() > 4 || StringUtils.indexOfAny(temp, "0123456789") == -1) {
@@ -85,16 +86,21 @@ public class ExcelFormattingJava {
                 // goes through the rows
                 for(int i = 0; i < sheet.getLastRowNum(); i++){
                     Cell c = null;
-                    c = row.getCell(issnLoc);
-                    if(1 == 0 )
-                        c.setCellValue("ISSBN/ISSN");
+
+                    if(i == 0 ) {
+                        c = row.getCell(issnLoc);
+                        // c.setCellValue("ISSBN/ISSN");
+                        System.out.println();
+                    }
                     else {
+                        c = row.getCell(issnLoc);
                         // gets the row
                         row = sheet.getRow(i);
                         // gets the value of the cell that has the ISSN
                         temp = row.getCell(issnLoc).getStringCellValue();
                         // if there is a non number or dash then it gets removed
-                        if (StringUtils.indexOfAnyBut("0123456789-") > -1) {
+
+                        if (StringUtils.indexOfAnyBut(temp,"0123456789-") > -1 && parse2.checkValid(temp)) {
                             temp = parse2.purge(temp);
                         }
                         // if the ISSN is 8 long then add a dash
@@ -129,7 +135,7 @@ public class ExcelFormattingJava {
 
 // implement the write after isbn is done
 /*
-    todo: implement the write to excel sheet and other formatting
+
     TODO: implement multi-threading to do ibsn and years at the same time
 
  */
