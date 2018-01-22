@@ -36,7 +36,7 @@ public class ExcelFormattingJava {
 
             Sheet sheet = wb.getSheetAt(0); // gets first sheet
             Row row = sheet.getRow(0); // gets first row
-
+ // ------------------------------------------ Loan Date Formatting -----------------------------------------
             // finds loan date
             for (int i = 0; i < row.getLastCellNum(); i++) {
 
@@ -81,7 +81,7 @@ public class ExcelFormattingJava {
 
                 }
             }
-
+            // ------------------------------ ISBN/ISSN Formatting --------------------------------------
             if (issnLoc != 0){
                 // goes through the rows
                 for(int i = 0; i < sheet.getLastRowNum(); i++){
@@ -114,6 +114,7 @@ public class ExcelFormattingJava {
                     }
                 }
             }
+            // --------------------------------- Writing To File --------------------------------
             FileOutputStream fileOut = new FileOutputStream("test.xlsx");   // opens the output stream
             wb.write(fileOut);  // write to the workbook
             fileOut.flush();

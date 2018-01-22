@@ -54,10 +54,11 @@ public class IsbnParse {
                         }
                     }
 
+
                     System.out.println();
                     //else if sub1 is smaller then 8, then the whitespace SHOULD be at the front and sub2 might contain the isbn
                 } else {
-                    
+
                     System.out.println();
                 }
             }
