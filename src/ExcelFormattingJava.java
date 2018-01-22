@@ -98,9 +98,9 @@ public class ExcelFormattingJava {
                         row = sheet.getRow(i);
                         // gets the value of the cell that has the ISSN
                         temp = row.getCell(issnLoc).getStringCellValue();
-                        // if there is a non number or dash then it gets removed
 
-                        if (StringUtils.indexOfAnyBut(temp,"0123456789-") > -1 && parse2.checkValid(temp)) {
+                        // if there is a non number then it gets put in the cleanup function
+                        if (StringUtils.indexOfAnyBut(temp,"0123456789-") > -1) {
                             temp = parse2.purge(temp);
                         }
                         // if the ISSN is 8 long then add a dash
@@ -138,5 +138,6 @@ public class ExcelFormattingJava {
 /*
 
     TODO: implement multi-threading to do ibsn and years at the same time
+    TODO: check if the first non number is an "en" dash
 
  */
