@@ -6,10 +6,18 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+class MultiThreading extends Thread{
+    public void run(){
+        System.out.println("Thread running!");
+
+    }
+}
+
 public class ExcelFormattingJava {
 
     public static void main(String[] args) throws Exception{
-
+        MultiThreading thread =  new MultiThreading();
+        thread.run();
         DateParse dateParse = new DateParse();
         IsbnParse parse2 = new IsbnParse();
         Cell cell;
