@@ -135,7 +135,7 @@ public class ExcelFormattingJava {
 
 // implement the write after isbn is done
 /*
-    todo: implement the write to excel sheet and other formatting
+
     TODO: implement multi-threading to do ibsn and years at the same time
 
  */
