@@ -138,6 +138,6 @@ public class ExcelFormattingJava {
 /*
 
     TODO: implement multi-threading to do ibsn and years at the same time
-    TODO: check if the first non number is an "en" dash
+    TODO: figure out the write to file for isbn, then multithreading and done(?)
 
  */

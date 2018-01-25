@@ -1,4 +1,8 @@
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class IsbnParse {
 
     IsbnParse(){    }
@@ -16,97 +20,48 @@ public class IsbnParse {
 
     // removes all non numbers and non -
     public String purge(String isbn){
-        String numbers = "0123456789-";
-        int firstNon, firstNum, lastNum, spaceLoc;// firstNon are first/last non number, firstNum/LastNum are first number
-        firstNon = StringUtils.indexOfAnyBut(isbn, numbers); // gets first non number
-        firstNum = StringUtils.indexOfAny(isbn, numbers); // gets first number
-        lastNum = StringUtils.lastIndexOfAny(isbn, numbers); // gets last number
-        spaceLoc = isbn.indexOf(" ");
-        String sub1, sub2;
-        /*
-            need to tell if the first non is a white space
-                -   if its a white space at beginning then delete up to it
-                -   if its a white space at end then delete past it
-         */
-        // if there is no numbers at all return a blank line
-        if(firstNum == -1)
+
+        int spaceLoc;// firstNon are first/last non number, firstNum/LastNum are first number
+        String newIsbn = "";
+
+        Pattern checkRegex = Pattern.compile("(([0-9Xx][- ]*){13}|([0-9Xx][- ]*){10})");
+        Matcher regexMatcher = checkRegex.matcher(isbn);
+        isbn = removeDashes(isbn);
+
+
+        // while its finding matches
+        while(regexMatcher.find()){
+            // if the string has a length
+            if(regexMatcher.group().length() != 0)
+                newIsbn = regexMatcher.group().trim();
+        }
+        // if there is a found isbn
+        if(newIsbn.length() > 0){
+            // find the location of a space
+            spaceLoc = newIsbn.indexOf(" ");
+            // if there is a space then use the isbn number up to the space
+            if(spaceLoc > - 1){
+                newIsbn = newIsbn.substring(0, spaceLoc);
+            }
+
+            return StringUtils.remove(newIsbn, '-');
+        }
+        else{
             return "";
-
-        // based on where the space is first
-        while(firstNon != -1) {
-            System.out.println(isbn.charAt(firstNon));
-            if (spaceLoc > -1) {
-                sub1 = isbn.substring(0, spaceLoc); // has the isbn up to the first space
-                sub2 = isbn.substring(spaceLoc + 1, isbn.length()); // has the isbn of the first space till end
-
-                // if the first space is at the end of the isbn number
-                if (sub1.length() >= 8 && checkValid(sub1)) {
-
-                    // gets the first non number of the substring up to the first space
-                    firstNon = StringUtils.indexOfAnyBut(sub1, numbers);
-                    if (firstNon > -1) // if there are non numbers
-                    {   // if the first non number is an x or X then check if its valid and return/modify the string
-                        if (sub1.charAt(firstNon) == 'x' || sub1.charAt(firstNon) == 'X') {
-                            // if the string is a valid isbn
-                            if (checkValid(sub1)) {
-                                return sub1;
-                            }
-                            // if the first non number is an x or X and its not a valid isbn then erase the whole thing
-                            else
-                                sub1 = "";
-                        }
-                        // if there is a non number and it isnt an x or X then remove it
-                        else {
-                            sub1 = sub1.substring(0, firstNon - 1);
-                            return sub1;
-                        }
-                    }
-                    // else if there are no non numbers
-                    else{
-                        if(checkValid(sub1))
-                            return sub1;
-
-                    }
-                    System.out.println();
-                    //else if sub1 is smaller then 8, then the whitespace SHOULD be at the front and sub2 might contain the isbn
-                } else {
-
-                    System.out.println();
-                    //
-                    if(StringUtils.indexOfAnyBut(sub2, numbers) == -1)
-                        return sub2;
-                    checkValid(sub1);
-                }
-            }
-            // else if there are no spaces
-            else{
-                // if the character that is not a number is an x or X, alternatively could use the check valid
-                if(checkValid(isbn)){
-                    return isbn;
-                }
-                if(isbn.charAt(firstNon) == 'x' || isbn.charAt(firstNon) == 'X' && firstNon == isbn.length() - 1){
-                    return isbn;
-                }
-                else{
-                    sub1 = isbn.substring(0, firstNon);
-                    sub2 = isbn.substring(firstNon, isbn.length());
-                    System.out.println();
-                    // if the first substring, from beginning to the first non number
-                    int len = sub1.length();
-                    // if the substring is 8 or longer, might need to do some checking with the second substring to be sure its right
-                    if(sub1.length() >= 8){
-                        if(sub2.length() < 8)
-                            return sub1;
-                        else
-                            System.out.println(); // use this to check if there needs to be something here
-                    }
-                    //else if(sub1.length() == 0 && sub2 = isbn)
-                }
-            }
         }
 
+
+
+    }
+
+
+    // removes all the dashes
+    public String removeDashes(String isbn){
+        isbn = StringUtils.remove(isbn, '-');
+        isbn = StringUtils.remove(isbn, '–');
         return isbn;
     }
+
 
     // checks if its in isbn format
     public Boolean checkValid(String isbn){
@@ -159,34 +114,96 @@ public class IsbnParse {
 
 }
 /*
-e(loc != -1) {
-            if(StringUtils.indexOfAny(isbn, numbers) > - 1)
-            // gets the string starting at the first number
-            if (loc != 0 && loc != (length - 1)) {
-                isbn = isbn.substring(0, loc);
-                loc = StringUtils.indexOfAnyBut(isbn, numbers);
+        // based on where the space is first
+        while(firstNon != -1) {
+            System.out.println(isbn.charAt(firstNon));
+            if (spaceLoc > -1) {
+                sub1 = isbn.substring(0, spaceLoc); // has the isbn up to the first space
+                sub2 = isbn.substring(spaceLoc + 1, isbn.length()); // has the isbn of the first space till end
+
+                // if the first space is at the end of the isbn number
+                if (sub1.length() >= 8 && checkValid(sub1)) {
+
+                    // gets the first non number of the substring up to the first space
+                    firstNon = StringUtils.indexOfAnyBut(sub1, numbers);
+                    if (firstNon > -1) // if there are non numbers
+                    {   // if the first non number is an x or X then check if its valid and return/modify the string
+                        if (sub1.charAt(firstNon) == 'x' || sub1.charAt(firstNon) == 'X') {
+                            // if the string is a valid isbn
+                            if (checkValid(sub1)) {
+                                return sub1;
+                            }
+                            // if the first non number is an x or X and its not a valid isbn then erase the whole thing
+                            else
+                                sub1 = "";
+                        }
+                        // if there is a non number and it isnt an x or X then remove it
+                        else {
+                            sub1 = sub1.substring(0, firstNon - 1);
+                            return sub1;
+                        }
+                    }
+                    // else if there are no non numbers
+                    else{
+                        if(checkValid(sub1))
+                            return sub1;
+
+                    }
+                    System.out.println();
+                    //else if sub1 is smaller then 8, then the whitespace SHOULD be at the front and sub2 might contain the isbn
+                } else {
+
+                    System.out.println();
+                    //
+                    if(StringUtils.indexOfAnyBut(sub2, numbers) == -1)
+                        return sub2;
+                    else{
+                        firstNon = StringUtils.indexOfAnyBut(sub2, numbers); // maybe using firstNon messes with things if the fixed isbn isnt returned right away
+                        if(sub2.charAt(firstNon) == ' ' && firstNon == 1 && sub2.charAt(0) == '-') { // if the non character is a space and its the second spot and the first spot is a dash
+                            sub2 = sub2.substring(firstNon + 1, sub2.length()); // get rid of the dash and the space
+                            isbn = sub1 + sub2;
+                            // this is a specific solution to the isbn of XXX - XXXXXXXXXX, which is an isbn with 13 numbers but only 1 dash which is surrounded by whitespaces
+                        }
+                    }
+                    checkValid(sub1);
+                }
             }
-            //int loc2 = StringUtils.lastIndexOfAnyBut(numbers, isbn); // location of last number
-
-            // if the string contains only 0-9 and - or loc is the last spot in the string
-            if (loc == -1 || loc == isbn.length())
-                return isbn;
-            else {
-                // if the first non number is an x and its at the end of the string of numbers
-                // then erase from 1 past last char to end
-
-                if (isbn.charAt(loc) == 'x' || isbn.charAt(loc) == 'X'
-                        && Character.isLetter(isbn.charAt(loc))) {
-                    isbn = isbn.substring(0, loc + 1);
-                    if(StringUtils.indexOfAnyBut(isbn, numbers + "xX") == -1)
-                            return isbn;
-                }else if(loc == isbn.length()){
-
-                }else
-                    isbn = isbn.substring(loc, isbn.length());
+            // else if there are no spaces
+            else{
+                // if the character that is not a number is an x or X, alternatively could use the check valid
+                if(checkValid(isbn)){
+                    return isbn;
+                }
+                if(isbn.charAt(firstNon) == 'x' || isbn.charAt(firstNon) == 'X' && firstNon == isbn.length() - 1){
+                    return isbn;
+                }
+                else{
+                    sub1 = isbn.substring(0, firstNon);
+                    sub2 = isbn.substring(firstNon, isbn.length());
+                    System.out.println();
+                    // if the first substring, from beginning to the first non number
+                    int len = sub1.length();
+                    // if the substring is 8 or longer, might need to do some checking with the second substring to be sure its right
+                    if(sub1.length() >= 8){
+                        if(sub2.length() < 8)
+                            return sub1;
+                        else
+                            System.out.println(); // use this to check if there needs to be something here
+                    }
+                    //else if(sub1.length() == 0 && sub2 = isbn)
+                }
             }
-            loc = StringUtils.indexOfAnyBut(isbn, numbers);
+            if(loopCounter > 5){
+                String tempIsbn;
+                tempIsbn = removeSpaces(isbn);
+                if(!checkValid(tempIsbn)){
+                    return "";
+                }
+                else{
+                    return tempIsbn;
+                }
+            }
+            loopCounter++; // if the isbn is not an isbn it will keep looping, once loops are over 5 the isbn gets returned as ""
         }
-        return isbn;
-    }
  */
+
