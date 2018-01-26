@@ -36,7 +36,7 @@ public class ExcelFormattingJava {
 
             Sheet sheet = wb.getSheetAt(0); // gets first sheet
             Row row = sheet.getRow(0); // gets first row
-
+ // ------------------------------------------ Loan Date Formatting -----------------------------------------
             // finds loan date
             for (int i = 0; i < row.getLastCellNum(); i++) {
 
@@ -81,7 +81,7 @@ public class ExcelFormattingJava {
 
                 }
             }
-
+            // ------------------------------ ISBN/ISSN Formatting --------------------------------------
             if (issnLoc != 0){
                 // goes through the rows
                 for(int i = 0; i < sheet.getLastRowNum(); i++){
@@ -98,9 +98,9 @@ public class ExcelFormattingJava {
                         row = sheet.getRow(i);
                         // gets the value of the cell that has the ISSN
                         temp = row.getCell(issnLoc).getStringCellValue();
-                        // if there is a non number or dash then it gets removed
 
-                        if (StringUtils.indexOfAnyBut(temp,"0123456789-") > -1 && parse2.checkValid(temp)) {
+                        // if there is a non number then it gets put in the cleanup function
+                        if (StringUtils.indexOfAnyBut(temp,"0123456789-") > -1) {
                             temp = parse2.purge(temp);
                         }
                         // if the ISSN is 8 long then add a dash
@@ -114,6 +114,7 @@ public class ExcelFormattingJava {
                     }
                 }
             }
+            // --------------------------------- Writing To File --------------------------------
             FileOutputStream fileOut = new FileOutputStream("test.xlsx");   // opens the output stream
             wb.write(fileOut);  // write to the workbook
             fileOut.flush();
@@ -137,5 +138,6 @@ public class ExcelFormattingJava {
 /*
 
     TODO: implement multi-threading to do ibsn and years at the same time
+    TODO: figure out the write to file for isbn, then multithreading and done(?)
 
  */
