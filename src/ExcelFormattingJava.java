@@ -89,18 +89,23 @@ public class ExcelFormattingJava {
 
                     if(i == 0 ) {
                         c = row.getCell(issnLoc);
-                        // c.setCellValue("ISSBN/ISSN");
+                        c.setCellValue("ISSBN/ISSN");
                         System.out.println();
                     }
                     else {
-                        c = row.getCell(issnLoc);
                         // gets the row
                         row = sheet.getRow(i);
+
+                        // gets the cell in the row
+                        c = row.getCell(issnLoc);
+
                         // gets the value of the cell that has the ISSN
                         temp = row.getCell(issnLoc).getStringCellValue();
-
+                        // removes dashes
+                        temp = parse2.removeDashes(temp);
                         // if there is a non number then it gets put in the cleanup function
                         if (StringUtils.indexOfAnyBut(temp,"0123456789-") > -1) {
+
                             temp = parse2.purge(temp);
                         }
                         // if the ISSN is 8 long then add a dash
@@ -129,8 +134,10 @@ public class ExcelFormattingJava {
             }
         }
 
+        System.out.println("Finished!");
 
     }
+
 }
 // loan date = cell 7
 
