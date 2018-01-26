@@ -44,7 +44,7 @@ public class IsbnParse {
                 newIsbn = newIsbn.substring(0, spaceLoc);
             }
 
-            return StringUtils.remove(newIsbn, '-');
+            return newIsbn;
         }
         else{
             return "";
