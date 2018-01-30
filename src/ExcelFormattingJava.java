@@ -3,8 +3,7 @@ import org.apache.poi.ss.formula.functions.Column;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class ExcelFormattingJava {
 
@@ -14,7 +13,7 @@ public class ExcelFormattingJava {
         IsbnParse parse2 = new IsbnParse();
         Cell cell;
         String name, temp;
-        int loanDateLoc = 0, issnLoc = 0;
+        int loanDateLoc = 0, issnLoc = 0, statusLoc = 0;
         Scanner scanner = new Scanner(System.in);
         // gets file name for excel sheet
         //System.out.println("Enter the name of the Excel sheet");
@@ -51,14 +50,19 @@ public class ExcelFormattingJava {
                     issnLoc = i;
 
                 }
+                else if (name.contains("Status")){
+                    statusLoc = i;
+                }
                 // if both have been found then leave the loop
-                if (loanDateLoc > 0 && issnLoc > 0)
+                if (loanDateLoc > 0 && issnLoc > 0 && statusLoc > 0)
                     break;
             }
             if (loanDateLoc == 0)
                 System.out.println("Could not find a cell named Loan Date");
             else if (issnLoc == 0)
                 System.out.println("Could not find a cell named ISSN");
+            else if (statusLoc == 0)
+                System.out.println("Could not find a cell named Status");
 
             if (loanDateLoc != 0) {
                 // goes through the rows
@@ -119,6 +123,56 @@ public class ExcelFormattingJava {
                     }
                 }
             }
+            //----------------------------------Consolidating Status Fields---------------------------
+            if(statusLoc != 0){
+                String value, newValue;
+                List<String> toGrad = Arrays.asList("DistanceEd", "DISTANCE EDUCAT", "Distance Ed Grad", "DistantGrad",
+                                                    "Staff/Grad");
+                List<String> toFac = Arrays.asList("FACULTY", "DistantFaculty");
+                List<String> toAffil = Arrays.asList("Affiliated Faculty", "");
+                HashMap<Integer, String> hmap = new HashMap<Integer, String>();
+
+                // goes through the rows
+                for(int i = 1; i < sheet.getLastRowNum(); i++){
+                    Cell c = null;
+                    // gets the row
+                    row = sheet.getRow(i);
+
+                    // gets the cell in the row
+                    c = row.getCell(statusLoc);
+
+                    // gets the value in the cell
+                    value = c.getStringCellValue();
+                    newValue = value;
+                    // convert the values
+                    if(toGrad.contains(value)){
+                        newValue = "Graduate";
+                    }else if(toFac.contains(value)){
+                        newValue = "Faculty";
+                    }else if (toAffil.contains(value)){
+                        newValue = "Affiliate";
+                    }
+
+                    if(newValue != value){
+                        c.setCellValue(newValue);
+                    }
+                    // used to find what is in the sheet first time around
+                    /*
+                    if(map.containsKey(value)){
+                        map.put(value, map.get(value) +1);
+                    }else
+                        map.put(value, 1);
+                    */
+
+                }
+                System.out.println();
+            }
+
+
+
+
+
+
             // --------------------------------- Writing To File --------------------------------
             FileOutputStream fileOut = new FileOutputStream("test.xlsx");   // opens the output stream
             wb.write(fileOut);  // write to the workbook
@@ -145,6 +199,10 @@ public class ExcelFormattingJava {
 /*
 
     TODO: implement multi-threading to do ibsn and years at the same time
-    TODO: figure out the write to file for isbn, then multithreading and done(?)
+
+    For the last part:
+        can use a do-while loop and a map
+        do the map before the loop, find someway to figure out which converts to grad/fac/affil
+        this way each excel sheet will add to the list of status to convert but also can just do by hand
 
  */
