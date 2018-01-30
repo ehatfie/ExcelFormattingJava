@@ -1,3 +1,6 @@
 11/30/2017
    -   Started to translate from c++ to java
    -   Beginning with the removal of character function
+
+1/30/2018
+   -   Forgot about this but the program is "done"
