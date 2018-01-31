@@ -13,76 +13,80 @@ public class DateParse {
         String letters = "abcdefghijklmnopqrstuvwxyz-/,$";
         String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "November", "December"};
         int loc = StringUtils.indexOfAnyBut(line, numbers);
-        while(loc != -1){
-            if (loc == 0){ // if the first spot in the line is a letter
-                // checks against the months
-                for(int i = 0; i < months.length; i++){
-                    // if it contains a month then only keep past the mnoth, might be able to delete the next x amount of characters if its in month day, year format
-                    if(line.contains(months[i]))
-                        line = line.substring(months[i].length()+1, line.length());
-                }
-                // if there are no numbers left
-                if(StringUtils.indexOfAny(line, numbers) == -1){
-                    line = "";
-                    break;
-                }
-
-                // get the new loc so it doesnt goof
-                loc = StringUtils.indexOfAny(line, numbers);
-            }
-            // if the non-number is a -
-            if (line.contains("-")){
-                // if yyy-
-                if(loc == 4) {
-                    // if yyyy-yyyy or yyyy-yy
-                    if(line.length() == 9 || line.length() == 6 &&
-                            StringUtils.indexOfAnyBut(line, numbers) != loc + 1) {
-                        // returns the first year
-                        return line.substring(0, loc);
+        int firstNum = StringUtils.indexOfAny(line, numbers);
+        if(firstNum > -1) {
+            while (loc != -1) {
+                if (loc == 0) { // if the first spot in the line is a letter
+                    // checks against the months
+                    for (int i = 0; i < months.length; i++) {
+                        // if it contains a month then only keep past the mnoth, might be able to delete the next x amount of characters if its in month day, year format
+                        if (line.contains(months[i]))
+                            line = line.substring(months[i].length() + 1, line.length());
                     }
-                    else
-                        line = line.substring(0, loc);
+                    // if there are no numbers left
+                    if (StringUtils.indexOfAny(line, numbers) == -1) {
+                        line = "";
+                        break;
+                    }
+
+                    // get the new loc so it doesnt goof
+                    loc = StringUtils.indexOfAny(line, numbers);
                 }
-                // if yy/yy
-                else if (loc == 2 && line.length() == 5){
-                    // if the year is greater than 10 its definitely 19xx
-                    if (line.charAt(loc) > 1)
-                        line = "19" + line.charAt(0) + line.charAt(1);
-                    // else
+                // if the non-number is a -
+                if (line.contains("-")) {
+                    // if yyy-
+                    if (loc == 4) {
+                        // if yyyy-yyyy or yyyy-yy
+                        if (line.length() == 9 || line.length() == 6 &&
+                                StringUtils.indexOfAnyBut(line, numbers) != loc + 1) {
+                            // returns the first year
+                            return line.substring(0, loc);
+                        } else
+                            line = line.substring(0, loc);
+                    }
+                    // if yy/yy
+                    else if (loc == 2 && line.length() == 5) {
+                        // if the year is greater than 10 its definitely 19xx
+                        if (line.charAt(loc) > 1)
+                            line = "19" + line.charAt(0) + line.charAt(1);
+                        // else
                         // ideally there would be some way to see if its from 1900-1910 vs 200-2010
                         // i'll probably figure that out sometime
-                }
-
-                // otherwise its not either of them and its a mm-dd-yyy or dd-mm-yyy
-                else{
-                    // if the last location of a string is the last of the line
-                    //***** check to see if this is right or it needs line.length() *******
-                    if(StringUtils.lastIndexOfAny(line, numbers) == (line.length() - 1)){
-                        line = "";
                     }
-                    // otherwise
+
+                    // otherwise its not either of them and its a mm-dd-yyy or dd-mm-yyy
+                    else {
+                        // if the last location of a string is the last of the line
+                        //***** check to see if this is right or it needs line.length() *******
+                        if (StringUtils.lastIndexOfAny(line, numbers) == (line.length() - 1)) {
+                            line = "";
+                        }
+                        // otherwise
+                        else
+                            line = line.substring(loc + 1);
+                    }
+                } else if (line.charAt(loc) == ',') {
+                    // if dd, yyyy or d,yyyy or same with mm
+                    if (line.substring(loc, line.length()).length() == 6) {
+                        line = line.substring(loc + 2);
+                    } else
+                        line = line.substring(0, loc); // ******** check if loc-1
+                }
+                // else erase the non number
+                else {
+                    if (line.charAt(loc) == '$')
+                        line = line.substring(0, loc);
                     else
-                        line = line.substring(loc+1);
+                        line = line.substring(loc);
                 }
+                loc = StringUtils.indexOfAnyBut(line, numbers);
             }
-            else if (line.charAt(loc) == ','){
-               // if dd, yyyy or d,yyyy or same with mm
-                if(line.substring(loc, line.length()).length() == 6){
-                    line = line.substring(loc+2);
-                }
-                else
-                    line = line.substring(0, loc); // ******** check if loc-1
-            }
-            // else erase the non number
-            else{
-                if (line.charAt(loc) == '$')
-                    line = line.substring(0, loc);
-                else
-                    line = line.substring(loc);
-            }
-            loc = StringUtils.indexOfAnyBut(line, numbers);
         }
-       return line;
+        else{
+            return "";
+        }
+        return line;
+
     }
     // formats dates with no numbers
     public String separate(String line){
@@ -113,8 +117,6 @@ public class DateParse {
                     line = line.substring(1);
             }
         }
-        else
-            System.out.println(line);// to see if there are other sizes
         return line;
     }
 
