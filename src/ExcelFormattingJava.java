@@ -7,26 +7,18 @@ import java.util.*;
 
 public class ExcelFormattingJava {
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
 
         DateParse dateParse = new DateParse();
         IsbnParse parse2 = new IsbnParse();
         Cell cell;
         String name, temp;
         int loanDateLoc = 0, issnLoc = 0, statusLoc = 0;
-        Scanner scanner = new Scanner(System.in);
-        // gets file name for excel sheet
-        //System.out.println("Enter the name of the Excel sheet");
-        //String filename = scanner.nextLine();
-        ArrayList<String[]> newYears = new ArrayList<>();
-        ArrayList<String[]> newISBN = new ArrayList<>();
         InputStream input = null;
-        OutputStream output = null;
         try {
             System.out.println("trying to open file");
             input = new FileInputStream("test.xlsx");
-           // output = new FileOutputStream("test.xlsx");
-            if(input ==  null )
+            if (input == null)
                 System.out.println("ERROR OPENING FILE(s)");
             else
                 System.out.println("files opened successfully");
@@ -35,7 +27,7 @@ public class ExcelFormattingJava {
 
             Sheet sheet = wb.getSheetAt(0); // gets first sheet
             Row row = sheet.getRow(0); // gets first row
- // ------------------------------------------ Loan Date Formatting -----------------------------------------
+            // ------------------------------------------ Loan Date Formatting -----------------------------------------
             // finds loan date
             for (int i = 0; i < row.getLastCellNum(); i++) {
 
@@ -46,11 +38,10 @@ public class ExcelFormattingJava {
                     loanDateLoc = i;
                 }
                 // finds the location of the ISSN cells
-                else if (name.contains("ISSN")){
+                else if (name.contains("ISSN")) {
                     issnLoc = i;
 
-                }
-                else if (name.contains("Status")){
+                } else if (name.contains("Status")) {
                     statusLoc = i;
                 }
                 // if both have been found then leave the loop
@@ -74,29 +65,28 @@ public class ExcelFormattingJava {
                     c = row.getCell(loanDateLoc);
                     temp = row.getCell(loanDateLoc).getStringCellValue();
                     // if temp is longer than 4 or if it does not have any numbers
-                    if(temp.length() > 4 || StringUtils.indexOfAny(temp, "0123456789") == -1) {
+                    if (temp.length() > 4 || StringUtils.indexOfAny(temp, "0123456789") == -1) {
                         if ((temp = dateParse.purge(temp)).length() > 4) {
                             temp = dateParse.separate(temp);
                         }
                     }
                     // checks if the value has been changed, if so then change it
-                    if(c.getStringCellValue() != temp)
+                    if (c.getStringCellValue() != temp)
                         c.setCellValue(temp);
 
                 }
             }
             // ------------------------------ ISBN/ISSN Formatting --------------------------------------
-            if (issnLoc != 0){
+            if (issnLoc != 0) {
                 // goes through the rows
-                for(int i = 0; i < sheet.getLastRowNum(); i++){
+                for (int i = 0; i < sheet.getLastRowNum(); i++) {
                     Cell c = null;
 
-                    if(i == 0 ) {
+                    if (i == 0) {
                         c = row.getCell(issnLoc);
                         c.setCellValue("ISSBN/ISSN");
                         System.out.println();
-                    }
-                    else {
+                    } else {
                         // gets the row
                         row = sheet.getRow(i);
 
@@ -108,7 +98,7 @@ public class ExcelFormattingJava {
                         // removes dashes
                         temp = parse2.removeDashes(temp);
                         // if there is a non number then it gets put in the cleanup function
-                        if (StringUtils.indexOfAnyBut(temp,"0123456789-") > -1) {
+                        if (StringUtils.indexOfAnyBut(temp, "0123456789-") > -1) {
 
                             temp = parse2.purge(temp);
                         }
@@ -124,16 +114,16 @@ public class ExcelFormattingJava {
                 }
             }
             //----------------------------------Consolidating Status Fields---------------------------
-            if(statusLoc != 0){
+            if (statusLoc != 0) {
                 String value, newValue;
                 List<String> toGrad = Arrays.asList("DistanceEd", "DISTANCE EDUCAT", "Distance Ed Grad", "DistantGrad",
-                                                    "Staff/Grad");
+                        "Staff/Grad");
                 List<String> toFac = Arrays.asList("FACULTY", "DistantFaculty");
                 List<String> toAffil = Arrays.asList("Affiliated Faculty", "");
                 HashMap<Integer, String> hmap = new HashMap<Integer, String>();
 
                 // goes through the rows
-                for(int i = 1; i < sheet.getLastRowNum(); i++){
+                for (int i = 1; i < sheet.getLastRowNum(); i++) {
                     Cell c = null;
                     // gets the row
                     row = sheet.getRow(i);
@@ -145,15 +135,15 @@ public class ExcelFormattingJava {
                     value = c.getStringCellValue();
                     newValue = value;
                     // convert the values
-                    if(toGrad.contains(value)){
+                    if (toGrad.contains(value)) {
                         newValue = "Graduate";
-                    }else if(toFac.contains(value)){
+                    } else if (toFac.contains(value)) {
                         newValue = "Faculty";
-                    }else if (toAffil.contains(value)){
+                    } else if (toAffil.contains(value)) {
                         newValue = "Affiliate";
                     }
 
-                    if(newValue != value){
+                    if (newValue != value) {
                         c.setCellValue(newValue);
                     }
                     // used to find what is in the sheet first time around
@@ -169,17 +159,13 @@ public class ExcelFormattingJava {
             }
 
 
-
-
-
-
             // --------------------------------- Writing To File --------------------------------
             FileOutputStream fileOut = new FileOutputStream("test.xlsx");   // opens the output stream
             wb.write(fileOut);  // write to the workbook
             fileOut.flush();
             fileOut.close();
             System.out.println();
-        }finally {
+        } finally {
             try {
                 if (input != null)
                     input.close();
@@ -193,16 +179,3 @@ public class ExcelFormattingJava {
     }
 
 }
-// loan date = cell 7
-
-// implement the write after isbn is done
-/*
-
-    TODO: implement multi-threading to do ibsn and years at the same time
-
-    For the last part:
-        can use a do-while loop and a map
-        do the map before the loop, find someway to figure out which converts to grad/fac/affil
-        this way each excel sheet will add to the list of status to convert but also can just do by hand
-
- */

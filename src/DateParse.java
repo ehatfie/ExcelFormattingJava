@@ -49,15 +49,10 @@ public class DateParse {
                         // if the year is greater than 10 its definitely 19xx
                         if (line.charAt(loc) > 1)
                             line = "19" + line.charAt(0) + line.charAt(1);
-                        // else
-                        // ideally there would be some way to see if its from 1900-1910 vs 200-2010
-                        // i'll probably figure that out sometime
                     }
 
                     // otherwise its not either of them and its a mm-dd-yyy or dd-mm-yyy
                     else {
-                        // if the last location of a string is the last of the line
-                        //***** check to see if this is right or it needs line.length() *******
                         if (StringUtils.lastIndexOfAny(line, numbers) == (line.length() - 1)) {
                             line = "";
                         }
@@ -123,14 +118,3 @@ public class DateParse {
 
 
 }
-
-/*
-    ideas
-    -   maybe check if there are 2 - in a date like dd-mm-yyyy and mm-dd-yyyy
-        if so then find the yyyy part and delete the rest
-    TODO
-       -    check the line.susbtring(loc) instances to see if its working right
-       -    for the ddmmyyyy/yyyymmdd stuff add another if statement that checks the char spots 3/4 or 5/6 to makes
-            sure we got the year
-       -    Stop the loop getting stuck
- */
